@@ -1,103 +1,101 @@
+'use client';
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import Image from "next/image";
+import React, { useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import type { VapiWidgetHandle } from "@/components/VapiWidget";
+
+const VapiWidget = dynamic(() => import("@/components/VapiWidget"), {
+  ssr: false,
+});
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const vapiRef = useRef<VapiWidgetHandle>(null);
+  const [inCall, setInCall] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+  const handleCallClick = () => {
+    if (vapiRef.current) {
+      setInCall(true);
+      vapiRef.current.endCall();
+      setTimeout(() => {
+        vapiRef.current?.startCall();
+      }, 200);
+    }
+  };
+
+  const handleEndCall = () => {
+    vapiRef.current?.endCall();
+    setInCall(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-4 py-10">
+      {/* Heading */}
+      <h1 className="text-3xl md:text-4xl font-bold mb-10 text-white">
+        🤖 AI Voice Bot
+      </h1>
+
+      {/* Side-by-side cards */}
+      <div className="w-full max-w-6xl flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
+        {/* Assistant Card */}
+        <Card className="bg-zinc-900 border border-zinc-700 flex-1 p-6 flex flex-col items-center rounded-2xl shadow-lg">
+          <div className="relative">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="/bot.jpg"
+              alt="Assistant"
+              width={100}
+              height={100}
+              className="rounded-full border-4 border-emerald-500"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            {inCall && (
+              <div className="absolute top-0 right-0 w-3 h-3 rounded-full bg-emerald-500 animate-pulse ring-2 ring-black" />
+            )}
+          </div>
+          <div className="mt-4 font-semibold text-xl text-white">Ayush Kankane</div>
+          <div className="text-sm text-gray-400">AI Assistant</div>
+        </Card>
+
+        {/* User Card */}
+        <Card className="bg-zinc-900 border border-zinc-700 flex-1 p-6 flex flex-col items-center rounded-2xl shadow-lg">
+          <Image
+            src="/user.jpg"
+            alt="User"
+            width={100}
+            height={100}
+            className="rounded-full border-4 border-gray-600"
+          />
+          <div className="mt-4 font-semibold text-xl text-white">You</div>
+          <div className="text-sm text-gray-400">Caller</div>
+        </Card>
+      </div>
+
+      {/* Call Buttons */}
+      <div className="flex gap-4 mb-10">
+        <Button
+          onClick={handleCallClick}
+          className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-full text-base font-semibold shadow-lg transition-all duration-300"
+        >
+          Start Call
+        </Button>
+
+        {inCall && (
+          <Button
+            onClick={handleEndCall}
+            className="bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-full text-base font-semibold shadow-lg transition-all duration-300"
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            End Call
+          </Button>
+        )}
+      </div>
+
+      {/* Vapi Widget */}
+      <VapiWidget
+        ref={vapiRef}
+        apiKey={process.env.NEXT_PUBLIC_VAPI_API_KEY!}
+        assistantId={process.env.NEXT_PUBLIC_VAPI_ASSISTANT_ID!}
+      />
     </div>
   );
 }
